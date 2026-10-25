@@ -1266,6 +1266,11 @@ Validation::FETCH_CODE Validation::fetch_page(bool mark, PageNumber page_number,
 	const ULONG pageSpaceId = page_number.getPageSpaceID();
 	const PageManager& pageMgr = dbb->dbb_page_manager;
 	const PageSpace* pageSpace = pageMgr.findPageSpace(pageSpaceId);
+	if (!pageSpace)
+	{
+		corrupt(VAL_P_PAGE_INCONSISTENT, 0, pageSpaceId, page_number.getPageNum(), 0);
+		return fetch_type;
+	}
 
 	auto pageSpaceInfo = vdr_page_spaces.get(pageSpaceId);
 	if (!pageSpaceInfo)

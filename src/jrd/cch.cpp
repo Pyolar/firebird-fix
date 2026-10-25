@@ -935,7 +935,11 @@ void CCH_fetch_page(thread_db* tdbb, WIN* window, const bool read_shadow)
 	tdbb->bumpStats(PageStatType::READS, pageSpaceId);
 
 	const auto pageSpace = dbb->dbb_page_manager.findPageSpace(pageSpaceId);
-	fb_assert(pageSpace);
+	if (!pageSpace)
+	{
+		ERR_post(Arg::Gds(isc_db_corrupt) << Arg::Str(dbb->dbb_filename) <<
+				 Arg::Gds(isc_random) << Arg::Str("page belongs to undefined page space"));
+	}
 
 	jrd_file* file = pageSpace->file;
 	const bool isTempPage = pageSpace->isTemporary();
